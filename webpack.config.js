@@ -4,11 +4,13 @@ var fs = require('fs-extra');
 var webpackMerge = require('webpack-merge');
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var WebpackOnBuildPlugin = require('on-build-webpack');
+var bootstrap = require('bootstrap-styl');
 
 // Webpack Config
 var webpackConfig = {
   entry: {
     'main': './src/main.browser.ts',
+    'bootstrap': './src/app/styles.styl'
   },
 
   output: {
@@ -34,6 +36,10 @@ var webpackConfig = {
       fs.copySync('src/assets', 'dist/assets')
     }),
 
+    new webpack.LoaderOptionsPlugin({
+      stylus: { use: [bootstrap()] },
+    }),
+
   ],
 
   module: {
@@ -50,11 +56,14 @@ var webpackConfig = {
       { test: /\.css$/, loaders: ['to-string-loader', 'css-loader'] },
       { test: /\.html$/, loader: 'raw-loader' },
       { test: /\.pug$/, loader: 'pug-loader' },
+      { test: /\.(eot|svg|ttf|woff|woff2)$/, loader: 'file?name=node_modules/bootstrap-styl/fonts/[name].[ext]' },
+      { test: /\.styl$/, loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-styl' },
       { test: /\.styl$/, loader: 'css-loader!stylus-loader?paths=node_modules/bootstrap-stylus/stylus/' }
     ]
   }
 
 };
+
 
 
 // Our Webpack Defaults
@@ -68,7 +77,7 @@ var defaultConfig = {
   },
 
   resolve: {
-    extensions: [ '.ts', '.js' ],
+    extensions: [ '.ts', 'styl', '.js' ],
     modules: [ path.resolve(__dirname, 'node_modules') ]
   },
 
